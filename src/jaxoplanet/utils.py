@@ -4,8 +4,8 @@ import jax
 import jax.numpy as jnp
 
 
-def get_dtype_eps(x):
-    return jnp.finfo(jax.dtypes.result_type(x)).eps
+def get_dtype_eps(*args):
+    return jnp.finfo(jax.dtypes.result_type(*args)).eps
 
 
 @jax.custom_jvp

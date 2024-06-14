@@ -6,7 +6,11 @@ import jax
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry.solution import kappas, solution_vector
+from jaxoplanet.core.limb_dark import solution_vector as solution_vector_limb
+from jaxoplanet.experimental.starry.solution import _kappas, solution_vector
+from jaxoplanet.experimental.starry.solution_closed_form import (
+    solution_vector as solution_vector_closed,
+)
 from jaxoplanet.test_utils import assert_allclose
 
 
@@ -30,7 +34,7 @@ def test_kappas():
     b, r = np.meshgrid(np.linspace(0, 2, 100), np.linspace(0.01, 1.5, 13))
     b = b.flatten()
     r = r.flatten()
-    kappa0, kappa1 = jax.vmap(kappas)(b, r)
+    kappa0, kappa1 = jax.vmap(_kappas)(b, r)
     phi = _phi(b, r)
     lam = _lam(b, r)
 
@@ -76,3 +80,26 @@ def test_solution_compare_starry(r, l_max=10, order=20):
             err_msg=f"n={n}, l={l}, m={m}, mu={mu}, nu={nu}, case={case}",
             atol=1e-6,
         )
+
+
+@pytest.mark.parametrize(
+    "br",
+    [
+        (0.8, 0.3),  # "k2 < 1"
+        (0.5, 0.3),  # "k2 > 1"
+        (0.1, 0.1),  # "r = b < 1/2"
+        (0.6, 0.6),  # "r = b > 1/2"
+        (0.5, 0.5),  # "r = b = 1/2"
+        (0.9, 0.1),  # "r + b = 1"
+        (0.1, 2.0),  # "|r - b| >= 1"
+        (0, 0.1),  # "b = 0"
+        (0.1, 0.0),  # "r = 0"
+    ],
+)
+def test_solution_closed_form(br):
+    """Test the closed-form solution against the limb-darkened solution vector from
+    Agol 2019."""
+    b, r = br
+    s_calc = solution_vector_limb(2, 500)(b, r)
+    s_expect = solution_vector_closed(b, r)
+    assert_allclose(s_calc, s_expect)

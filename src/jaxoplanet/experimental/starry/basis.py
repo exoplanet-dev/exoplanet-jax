@@ -428,3 +428,50 @@ def U0(udeg: int):
             P[i, j] += v
 
     return P
+
+
+def Agol_A1(N):
+    """Return the change of basis matrix A1 from Agol et al. 2019."""
+    res = np.zeros((N + 1, N + 1))
+    for i in range(N + 1):
+        for j in range(N + 1):
+            res[i, j] = (-1) ** (i + 1) * comb(j, i)
+    return res
+
+
+def Agol_A2(N):
+    """Return the change of basis matrix A2 from Agol et al. 2019."""
+    coeffs = np.zeros((N + 1, N + 1))
+    for i in range(N + 1):
+        if i in [0, 1]:
+            coeffs[i, i] = 1
+        else:
+            coeffs[i, i - 2] = -i
+            coeffs[i, i] = i + 2
+
+    return np.linalg.inv(coeffs.T)
+
+
+def Agol_A(N):
+    """Return the change of basis matrix A from Agol et al. 2019.
+
+    Example on how to transform from Agol 2019 solution vector to
+    starry solution vector
+
+    ```
+    from jaxoplanet.experimental.starry.solution import solution_vector as sv_starry
+    from jaxoplanet.core.limb_dark import solution_vector as sv_agol
+    from jaxoplanet.experimental.starry.basis import U0, A2_inv
+
+    # starry
+    n = 4
+    A2 = np.linalg.inv(A2_inv(n).todense())
+    sv_starry(n, 500)(b, r) @ A2 @ U0(n).T
+
+    # Agol
+    sv_agol(n, 500)(b, r) @ Agol_A(n)
+    ```
+
+    The transformed solution vectors are then comparable
+    """
+    return np.dot(Agol_A2(N), Agol_A1(N))
