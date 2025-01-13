@@ -6,13 +6,13 @@ import jax.numpy as jnp
 import numpy as np
 import scipy
 
-from jaxoplanet.experimental.starry.basis import A1, A2_inv, U
-from jaxoplanet.experimental.starry.orbit import SurfaceSystem
-from jaxoplanet.experimental.starry.pijk import Pijk
-from jaxoplanet.experimental.starry.rotation import left_project
-from jaxoplanet.experimental.starry.solution import rT, solution_vector
-from jaxoplanet.experimental.starry.surface import Surface
 from jaxoplanet.light_curves.utils import vectorize
+from jaxoplanet.starry.core.basis import A1, A2_inv, U
+from jaxoplanet.starry.core.polynomials import Pijk
+from jaxoplanet.starry.core.rotation import left_project
+from jaxoplanet.starry.core.solution import rT, solution_vector
+from jaxoplanet.starry.orbit import SurfaceSystem
+from jaxoplanet.starry.surface import Surface
 from jaxoplanet.types import Array, Quantity
 from jaxoplanet.units import quantity_input, unit_registry as ureg
 
@@ -101,14 +101,14 @@ def surface_light_curve(
     x: float | None = None,
     y: float | None = None,
     z: float | None = None,
-    theta: float | None = 0.0,
+    theta: float | None = None,
     order: int = 20,
     higher_precision: bool = False,
 ):
     """Light curve of an occulted surface.
 
     Args:
-        map (Map): Surface object
+        surface (Surface): Surface object
         r (float or None): radius of the occulting body, relative to the current map
            body
         x (float or None): x coordinate of the occulting body relative to the surface
@@ -121,13 +121,15 @@ def surface_light_curve(
             rotation angle of the map, in radians. By default 0.0
         order (int):
             order of the P integral numerical approximation. By default 20
+        higher_precision (bool): whether to compute change of basis matrix as hight
+            precision. By default False (only used to testing).
 
     Returns:
         ArrayLike: flux
     """
     if higher_precision:
         try:
-            from jaxoplanet.experimental.starry.multiprecision import (
+            from jaxoplanet.starry.multiprecision import (
                 basis as basis_mp,
                 utils as utils_mp,
             )
@@ -176,7 +178,12 @@ def surface_light_curve(
         rotated_y = surface.y.todense()
     else:
         rotated_y = left_project(
-            surface.ydeg, surface.inc, surface.obl, theta, theta_z, surface.y.todense()
+            surface.ydeg,
+            surface._inc,
+            surface._obl,
+            theta,
+            theta_z,
+            surface.y.todense(),
         )
 
     # limb darkening

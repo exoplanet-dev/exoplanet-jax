@@ -4,7 +4,7 @@ from functools import partial
 import jax
 import jax.numpy as jnp
 
-from jaxoplanet.experimental.starry.s2fft_rotation import (
+from jaxoplanet.starry.core.s2fft_rotation import (
     compute_rotation_matrices as compute_rotation_matrices_s2fft,
 )
 from jaxoplanet.types import Array

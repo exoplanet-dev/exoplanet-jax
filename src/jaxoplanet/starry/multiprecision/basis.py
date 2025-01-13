@@ -3,9 +3,9 @@ from functools import reduce
 
 import numpy as np
 
-from jaxoplanet.experimental.starry import basis
-from jaxoplanet.experimental.starry.multiprecision import mp, utils
-from jaxoplanet.experimental.starry.multiprecision.utils import (
+from jaxoplanet.starry.core import basis
+from jaxoplanet.starry.multiprecision import mp, utils
+from jaxoplanet.starry.multiprecision.utils import (
     fac as fac_function,
     kron_delta,
 )

@@ -3,7 +3,7 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry.rotation import (
+from jaxoplanet.starry.core.rotation import (
     dot_rotation_matrix,
     full_rotation_axis_angle,
     left_project,
@@ -25,7 +25,6 @@ def test_dot_rotation_symbolic(l_max, u, theta):
     assert_allclose(calc, expected)
 
 
-@pytest.mark.skip(reason="Test if test is causing issues in macos-py11. TODO: revert")
 @pytest.mark.parametrize("l_max", [5, 4, 3, 2, 1, 0])
 @pytest.mark.parametrize("theta", [-0.5, 0.0, 0.1, 1.5 * np.pi])
 def test_dot_rotation_z(l_max, theta):
@@ -41,9 +40,9 @@ def test_dot_rotation_z(l_max, theta):
 def test_R(l_max, u, theta):
     """Test full rotation matrix against symbolic one"""
     pytest.importorskip("mpmath")
-    from jaxoplanet.experimental.starry.multiprecision import utils
-    from jaxoplanet.experimental.starry.multiprecision.rotation import R
-    from jaxoplanet.experimental.starry.rotation import compute_rotation_matrices
+    from jaxoplanet.starry.core.rotation import compute_rotation_matrices
+    from jaxoplanet.starry.multiprecision import utils
+    from jaxoplanet.starry.multiprecision.rotation import R
 
     expected = R(l_max, u, theta)
     calc = compute_rotation_matrices(l_max, u[0], u[1], u[2], theta)
@@ -187,8 +186,8 @@ def test_R_multiprecision_symbolic(l_max, u, theta):
     pytest.importorskip("sympy")
     from scipy.linalg import block_diag
 
-    from jaxoplanet.experimental.starry.multiprecision import utils
-    from jaxoplanet.experimental.starry.multiprecision.rotation import R
+    from jaxoplanet.starry.multiprecision import utils
+    from jaxoplanet.starry.multiprecision.rotation import R
 
     expected = np.array(R_symbolic(l_max, u, theta)).astype(float)
     calc = block_diag(

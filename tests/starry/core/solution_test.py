@@ -6,7 +6,7 @@ import jax
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry.solution import kappas, solution_vector
+from jaxoplanet.starry.core.solution import kappas, solution_vector
 from jaxoplanet.test_utils import assert_allclose
 
 
@@ -41,7 +41,7 @@ def test_kappas():
 @pytest.mark.parametrize("r", [0.01, 0.1, 1.0, 10.0, 100.0])
 def test_solution(r, l_max=5, order=500):
     pytest.importorskip("mpmath")
-    from jaxoplanet.experimental.starry.multiprecision import (
+    from jaxoplanet.starry.multiprecision import (
         solution as mp_solution,
         utils,
     )

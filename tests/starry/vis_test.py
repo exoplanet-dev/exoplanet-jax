@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry.orbit import SurfaceBody
-from jaxoplanet.experimental.starry.surface import Surface
-from jaxoplanet.experimental.starry.visualization import show_surface
-from jaxoplanet.experimental.starry.ylm import Ylm
+from jaxoplanet.starry.orbit import SurfaceBody
+from jaxoplanet.starry.surface import Surface
+from jaxoplanet.starry.visualization import show_surface
+from jaxoplanet.starry.ylm import Ylm
 
 
 def test_show_map():

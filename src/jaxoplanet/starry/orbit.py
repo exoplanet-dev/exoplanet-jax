@@ -1,9 +1,9 @@
 from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
-from jaxoplanet.experimental.starry.surface import Surface
 from jaxoplanet.object_stack import ObjectStack
 from jaxoplanet.orbits.keplerian import Body, Central, OrbitalBody, System
+from jaxoplanet.starry.surface import Surface
 
 
 class SurfaceBody(Body):

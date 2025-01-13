@@ -2,12 +2,12 @@ import jax
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry import Surface, Ylm
-from jaxoplanet.experimental.starry.light_curves import light_curve, surface_light_curve
-from jaxoplanet.experimental.starry.orbit import SurfaceSystem
 from jaxoplanet.light_curves import limb_dark_light_curve
 from jaxoplanet.light_curves.emission import light_curve as emission_light_curve
 from jaxoplanet.orbits import keplerian
+from jaxoplanet.starry import Surface, Ylm
+from jaxoplanet.starry.light_curves import light_curve, surface_light_curve
+from jaxoplanet.starry.orbit import SurfaceSystem
 from jaxoplanet.test_utils import assert_allclose
 from jaxoplanet.units import unit_registry as ureg
 
@@ -48,7 +48,7 @@ def test_compare_starry_limb_dark(deg, u):
 @pytest.mark.parametrize("r", [0.01, 0.1, 1.0, 10.0, 100.0])
 def test_flux(r, l_max=5, order=500):
     pytest.importorskip("mpmath")
-    from jaxoplanet.experimental.starry.multiprecision import flux as mp_flux
+    from jaxoplanet.starry.multiprecision import flux as mp_flux
 
     # We know that these are were the errors are the highest
     b = 1 - r if r < 1 else r
@@ -499,7 +499,6 @@ def test_light_curves_orders(order):
     _ = light_curve(system, order=order)(0.0)
 
 
-@pytest.mark.skip(reason="Test if test is causing issues in macos-py11. TODO: revert ")
 @pytest.mark.parametrize("deg", [2, 5, 10])
 def test_compare_y_from_u(deg):
     """In this test we convert the limb darkening coefficients to spherical harmonic

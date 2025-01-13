@@ -5,8 +5,8 @@ import jax.numpy as jnp
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from jaxoplanet.experimental.starry.basis import A1, poly_basis
-from jaxoplanet.experimental.starry.rotation import left_project
+from jaxoplanet.starry.core.basis import A1, poly_basis
+from jaxoplanet.starry.core.rotation import left_project
 
 
 @partial(jax.jit, static_argnums=(0))

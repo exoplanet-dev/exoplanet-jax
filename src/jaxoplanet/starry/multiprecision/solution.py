@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from jaxoplanet.experimental.starry.multiprecision import mp
+from jaxoplanet.starry.multiprecision import mp
 
 CACHED_MATRICES = defaultdict(
     lambda: {
@@ -229,3 +229,57 @@ def rT(lmax: int):
         lfac2 /= (ell / 2 + 2.5) * (ell / 2 + 3.5)
         amp0 *= 0.0625 * ell * (ell + 4)
     return mp.matrix(rt)
+
+
+def solution_limb_dark(degree, b, r):
+    r2 = r**2
+    b2 = b**2
+    s = []
+
+    k0, k1 = kappas(b, r)
+    area = kite_area(r, b, 1.0)
+    s0 = mp.pi - k1 - r2 * k0 + area * 0.5
+    s.append(s0)
+
+    if degree >= 1:
+
+        def func(x):
+            c = mp.cos(2 * x)
+            omz2 = r2 + b2 - 2 * b * r * c
+            if omz2 <= 0:
+                return 0.0
+            z2 = 1 - omz2
+            z3 = mp.sqrt(z2) * z2
+            return 2 * r * (r - b * c) * (1 - z3) / (3 * omz2)
+
+        s1 = -mp.quad(func, [-k0 / 2, k0 / 2]) - 2 * (k1 - mp.pi) / 3
+
+        s.append(s1.real)
+
+    if degree >= 2:
+        k2 = (1 - r2 - b2 + 2 * b * r) / (4 * b * r)
+
+        if k2 <= 1:
+            eta = (1 / (2 * mp.pi)) * (
+                k1 + r2 * (r2 + 2 * b2) * k0 - 0.25 * (1 + 5 * r2 + b2) * area
+            )
+        elif k2 > 1:
+            eta = 0.5 * r2 * (r2 + 2 * b2)
+
+        s2 = 2 * s0 + 4 * mp.pi * eta - 2 * mp.pi
+        s.append(s2)
+
+    if degree >= 3:
+
+        for n in range(3, degree + 1):
+
+            def func(x):
+                s2 = mp.sin(x) ** 2
+                return (k2 - s2) ** (0.5 * n) * (r - b + 2 * b * s2)
+
+            sn = 2 * r * (4 * b * r) ** (0.5 * n) * mp.quad(func, [-k0 / 2, k0 / 2])
+            sn = sn.real
+
+            s.append(-sn)
+
+    return mp.matrix(s)

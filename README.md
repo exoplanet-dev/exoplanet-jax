@@ -4,16 +4,16 @@ _Astronomical time series analysis with JAX_
 
 ---
 
-`jaxoplanet` is a
+*jaxoplanet* is a
 [functional-programming](https://en.wikipedia.org/wiki/Functional_programming)-forward
 implementation of many features from the
 [exoplanet](https://docs.exoplanet.codes/en/latest/) and
 [starry](https://starry.readthedocs.io/en/latest/) packages built on top of
 [JAX](https://jax.readthedocs.io/en/latest/).
 
-`jaxoplanet` includes fast and robust implementations of many exoplanet-specific
+*jaxoplanet* includes fast and robust implementations of many exoplanet-specific
 operations, including solving Kepler's equation, and computing limb-darkened
-light curves. Since `jaxoplanet` is built on top of JAX it has first-class
+light curves. Since *jaxoplanet* is built on top of JAX it has first-class
 support for hardware acceleration using GPUs and TPUs, and it also integrates
 seamlessly with modeling tools like
 [NumPyro](https://numpyro.readthedocs.io/en/latest/), and

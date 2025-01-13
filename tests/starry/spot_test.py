@@ -2,8 +2,8 @@ import jax
 import numpy as np
 import pytest
 
-from jaxoplanet.experimental.starry import Surface
-from jaxoplanet.experimental.starry.ylm import ylm_spot
+from jaxoplanet.starry import Surface
+from jaxoplanet.starry.ylm import ylm_spot
 from jaxoplanet.test_utils import assert_allclose
 
 

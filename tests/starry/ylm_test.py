@@ -1,6 +1,6 @@
 import pytest
 
-from jaxoplanet.experimental.starry.ylm import Ylm
+from jaxoplanet.starry.ylm import Ylm
 from jaxoplanet.test_utils import assert_allclose
 
 

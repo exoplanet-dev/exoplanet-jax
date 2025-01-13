@@ -1,8 +1,8 @@
 import numpy as np
 
-from jaxoplanet.experimental.starry.surface import Surface
-from jaxoplanet.experimental.starry.utils import graticule
-from jaxoplanet.experimental.starry.ylm import Ylm
+from jaxoplanet.starry.surface import Surface
+from jaxoplanet.starry.utils import graticule
+from jaxoplanet.starry.ylm import Ylm
 
 
 def show_surface(
@@ -19,18 +19,19 @@ def show_surface(
     """Show map of a
 
     Args:
-        ylm_surface_body (Ylm, Surface or SurfaceBody): Map or Body with a map
+        ylm_surface_body (Ylm, Surface or SurfaceBody): Ylm, Surface or Body with a
+            surface
         theta (float, optional): Rotation angle of the map wrt its rotation axis.
-        Defaults to 0.0.
+            Defaults to 0.0.
         res (int, optional): Resolution of the map render. Defaults to 400.
         n (int, optional): number of latitude and longitude lines to show.
-        Defaults to 6.
+            Defaults to 6.
         ax (matplotlib.pyplot.Axes, optional): plot axes. Defaults to None.
         white_contour (bool, optional): Whether to surround the map by a white border
-        (to hide border pixel aliasing). Defaults to True.
+            (to hide border pixel aliasing). Defaults to True.
         radius (float, optional): Radius of the body. Defaults to None.
         include_phase (bool, optional): Whether to add the proper phase to the map to
-        the rotation angle theta. Defaults to True.
+            the rotation angle theta. Defaults to True.
     """
     import matplotlib.pyplot as plt
 

@@ -116,6 +116,12 @@ class Pijk(eqx.Module):
 
         return cls(data, degree=degree)
 
+    def __add__(self, other: "Pijk") -> "Pijk":
+        if isinstance(other, Pijk):
+            return _add(self, other)
+        else:
+            return jax.tree_util.tree_map(lambda x: x + other, self)
+
     def __mul__(self, other: Any) -> "Pijk":
         if isinstance(other, Pijk):
             return _mul(self, other)
@@ -131,6 +137,18 @@ class Pijk(eqx.Module):
         return self.todense()[self.index(*key)]
 
 
+def _add(u: Pijk, v: Pijk) -> Pijk:
+    upv = defaultdict(float)
+    for (i1, j1, k1), v1 in u.data.items():
+        upv[(i1, j1, k1)] += v1 + v.data.get((i1, j1, k1), 0.0)
+
+    for (i2, j2, k2), v2 in v.data.items():
+        if (i2, j2, k2) not in upv:
+            upv[(i2, j2, k2)] += v2 + u.data.get((i2, j2, k2), 0.0)
+
+    return Pijk(upv)
+
+
 def _mul(u: Pijk, v: Pijk) -> Pijk:
     uv = defaultdict(float)
     for (i1, j1, k1), v1 in u.data.items():
@@ -144,3 +162,45 @@ def _mul(u: Pijk, v: Pijk) -> Pijk:
                 uv[(i1 + i2, j1 + j2, k1 + k2)] += v1v2
 
     return Pijk(uv)
+
+
+def polynomial_product_matrix(p, degree):
+    """Given a polynomial vector p, return a matrix M such that M @ p2 is the polynomial
+    product of p with p2.
+
+    Note: This function was implemented to reproduce the filter matrix from starry.
+    However, tests show that using the polynomial multiplication operator on the class
+    is faster than introducing a matrix multiplication (see surface_light_curve.py).
+
+    Args:
+        p (Array): A vector in the polynomial basis (in its dense form).
+        degree (int): Degree of the polynomial to be multiplied with.
+
+    Returns:
+        Array: The polynomial product matrix.
+    """
+    p = jnp.array(p)
+    deg_p = int(np.floor(np.sqrt(len(p))))
+    M = jnp.zeros(
+        ((deg_p + degree + 1) * (deg_p + degree + 1), (degree + 1) * (degree + 1))
+    )
+    n1 = 0
+
+    for l1 in range(degree + 1):
+        for m1 in range(-l1, l1 + 1):
+            odd1 = (l1 + m1) % 2 != 0
+            n2 = 0
+            for l2 in range(deg_p + 1):
+                for m2 in range(-l2, l2 + 1):
+                    l = l1 + l2
+                    n = l * l + l + m1 + m2
+                    if odd1 and (l2 + m2) % 2 != 0:
+                        M = M.at[n - 4 * l + 2, n1].set(M[n - 4 * l + 2, n1] + p[n2])
+                        M = M.at[n - 2, n1].set(M[n - 2, n1] - p[n2])
+                        M = M.at[n + 2, n1].set(M[n + 2, n1] - p[n2])
+                    else:
+                        M = M.at[n, n1].set(M[n, n1] + p[n2])
+                    n2 += 1
+            n1 += 1
+
+    return M

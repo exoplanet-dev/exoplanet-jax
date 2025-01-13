@@ -1,15 +1,15 @@
 from collections import defaultdict
 
-from jaxoplanet.experimental.starry.basis import U
-from jaxoplanet.experimental.starry.multiprecision import mp, utils
-from jaxoplanet.experimental.starry.multiprecision.basis import A1, A2
-from jaxoplanet.experimental.starry.multiprecision.rotation import (
+from jaxoplanet.starry.core.basis import U
+from jaxoplanet.starry.core.polynomials import Pijk
+from jaxoplanet.starry.multiprecision import mp, utils
+from jaxoplanet.starry.multiprecision.basis import A1, A2
+from jaxoplanet.starry.multiprecision.rotation import (
     dot_rotation_matrix,
     dot_rz,
     get_R,
 )
-from jaxoplanet.experimental.starry.multiprecision.solution import get_sT, rT
-from jaxoplanet.experimental.starry.pijk import Pijk
+from jaxoplanet.starry.multiprecision.solution import get_sT, rT
 
 CACHED_MATRICES = defaultdict(
     lambda: {

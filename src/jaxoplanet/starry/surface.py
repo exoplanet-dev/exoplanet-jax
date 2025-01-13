@@ -6,32 +6,38 @@ import jax
 import jax.numpy as jnp
 from jax.scipy.spatial.transform import Rotation
 
-from jaxoplanet.experimental.starry.basis import A1, U, poly_basis
-from jaxoplanet.experimental.starry.pijk import Pijk
-from jaxoplanet.experimental.starry.rotation import (
+from jaxoplanet.starry.core.basis import A1, U, poly_basis
+from jaxoplanet.starry.core.polynomials import Pijk
+from jaxoplanet.starry.core.rotation import (
     full_rotation_axis_angle,
     left_project,
 )
-from jaxoplanet.experimental.starry.utils import ortho_grid
-from jaxoplanet.experimental.starry.ylm import Ylm
-from jaxoplanet.types import Array
+from jaxoplanet.starry.utils import ortho_grid
+from jaxoplanet.starry.ylm import Ylm
+from jaxoplanet.types import Array, Quantity
 
 
 class Surface(eqx.Module):
     """Surface map object.
 
     Args:
-        y: Ylm object containing the spherical harmonic expansion of the map. Defaults to
-            a uniform map with amplitude 1.0.
-        inc: inclination of the map relative to line of sight.
-            Defaults to 90 degrees (pi/2 radians).
-        obl: obliquity of the map.
-        u: polynomial limb-darkening coefficients of the map.
-        period: rotation period of the map.
-        amplitude: amplitude of the map; this quantity is proportional to the luminosity
-            of the map and multiplies all flux-related observables.
-        normalize: whether to normalize the coefficients of the spherical harmonics. If
-            True, Ylm is normalized and the amplitude of the map is set to y[(0, 0)].
+        y (Optional(:py:class:`~jaxoplanet.starry.ylm.Ylm`)) Ylm object containing the
+            spherical harmonic expansion of the map. Defaults to a uniform map with
+            amplitude 1.0.
+        inc (Optional[Quantity]): inclination of the map relative to line of sight.
+            Defaults to pi/2 [angular unit].
+        obl (Optional[Quantity]): obliquity of the map [angular unit]. Defaults to None.
+        u (Optional[Array]): polynomial limb-darkening coefficients of the map.
+        period (Optional[Quantity]): rotation period of the map [time unit]. Defaults to
+            None.
+        amplitude (Optional[float]): amplitude of the map; this quantity is proportional
+            to the luminosity of the map and multiplies all flux-related observables.
+            Defaults to 1.0.
+        normalize (Optional(bool)): whether to normalize the coefficients of the
+            spherical harmonics. If True, Ylm is normalized and the amplitude of the map
+            is set to y[(0, 0)]. Defaults to True.
+        phase (Optional[float]): initial phase of the map rotation around the polar
+            axis. Defaults to 0.0.
 
     Example:
 
@@ -39,20 +45,21 @@ class Surface(eqx.Module):
 
             import numpy as np
             import jax
-            from jaxoplanet.experimental.starry.utils import show_map
-            from jaxoplanet.experimental.starry.maps import Map
-            from jaxoplanet.experimental.starry.ylm import Ylm
+            from jaxoplanet.starry.visualization import show_surface
+            from jaxoplanet.starry.surface import Surface
+            from jaxoplanet.starry.ylm import Ylm
 
             jax.config.update("jax_enable_x64", True)
 
             np.random.seed(30)
             y = Ylm.from_dense(np.random.rand(20))
-            m = Map(y=y, u=[0.5, 0.1], inc=0.9, obl=-0.3)
-            show_map(m)
+            m = Surface(y=y, u=[0.5, 0.1], inc=0.9, obl=-0.3)
+            show_surface(m)
     """
 
     y: Ylm
-    """Ylm object representing the spherical harmonic expansion of the map"""
+    """:py:class:`~starry.ylm.Ylm` object representing the spherical harmonic expansion
+        of the map"""
 
     _inc: Array | None
     """Inclination of the map in radians. None if seen from the pole."""
@@ -80,10 +87,10 @@ class Surface(eqx.Module):
         self,
         *,
         y: Ylm | None = None,
-        inc: Array | None = 0.5 * jnp.pi,
-        obl: Array | None = None,
+        inc: Quantity | None = 0.5 * jnp.pi,
+        obl: Quantity | None = None,
         u: Iterable[Array] = (),
-        period: Array | None = None,
+        period: Quantity | None = None,
         amplitude: Array = 1.0,
         normalize: bool = True,
         phase: Array = 0.0,
@@ -136,7 +143,7 @@ class Surface(eqx.Module):
 
     @property
     def deg(self):
-        """Total degree of the spherical harmonic expansion (`udeg + ydeg`)."""
+        """Total degree of the spherical harmonic expansion (``udeg + ydeg``)."""
         return self.ydeg + self.udeg
 
     def _intensity(self, x, y, z, theta=None):
