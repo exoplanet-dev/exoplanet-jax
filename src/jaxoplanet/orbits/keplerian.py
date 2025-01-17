@@ -451,7 +451,7 @@ class OrbitalBody(eqx.Module):
             The separation (arcseconds) and position angle (radians, measured
             east of north) of the planet relative to the star.
         """
-        X, Y, _ = self.relative_position(t, parallax=parallax)[0]
+        X, Y, _ = self.relative_position(t, parallax=parallax)
         rho = jnpu.sqrt(X**2 + Y**2)
         theta = jnpu.arctan2(Y, X)
         return rho, theta
