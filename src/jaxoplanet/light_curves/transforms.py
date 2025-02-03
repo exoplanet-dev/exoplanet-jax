@@ -1,5 +1,4 @@
-"""A module providing decorators to transform light curve functions
-"""
+"""A module providing decorators to transform light curve functions"""
 
 __all__ = ["integrate", "interpolate"]
 
