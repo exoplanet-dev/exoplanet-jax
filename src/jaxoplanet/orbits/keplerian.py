@@ -1,5 +1,4 @@
-"""A module to define Keplerian systems of bodies.
-"""
+"""A module to define Keplerian systems of bodies."""
 
 from collections.abc import Callable, Iterable, Sequence
 from typing import Any
