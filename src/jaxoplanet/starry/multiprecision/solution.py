@@ -51,7 +51,7 @@ def P(l, m, b, r):
     mu = l - m
     nu = l + m
 
-    if (abs(1 - r) < b) and (b < 1 + r):
+    if (abs(1 - r) < b < 1 + r):
         kappa = kappas(b, r)[0]
         phi = kappa - mp.pi / 2
     else:
@@ -141,7 +141,7 @@ def p_numerical(l_max, b, r):
 
 def q_numerical(l_max, b, r):
 
-    if (abs(1 - r) < b) and (b < 1 + r):
+    if (abs(1 - r) < b < 1 + r):
         lam = 0.5 * mp.pi - kappas(b, r)[1]
     else:
         lam = mp.pi / 2
